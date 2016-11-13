@@ -27,104 +27,38 @@ export default class {
 
   static styleUrls() {
     return [
-      'ui-library/basic/master.css'
+      'ui-library/master.css'
     ];
   }
 
   static template() {
-    return `<!--style>
-        svg {
-            width: 100%;
-            height: auto;
-        }
+    return `
+      <div class="gauge">
+        <svg id="svg" viewBox="0 0 180 155" version="1.1" xmlns="http://www.w3.org/2000/svg">
+            <path id="circle-bg"
+                d="M54.935,145.533C34.429,133.401 20.638,110.776 20.638,84.866C20.638,46.157 51.417,14.773 89.382,14.773C127.346,14.773 158.126,46.157 158.126,84.866C158.126,110.776 144.334,133.401 123.829,145.533"/>
 
-        #svg path {
-            fill:none;
-            stroke-width:10px;
-            stroke-linecap:round;
-        }
+            <path id="circle-bar"
+                d="M54.935,145.533C34.429,133.401 20.638,110.776 20.638,84.866C20.638,46.157 51.417,14.773 89.382,14.773C127.346,14.773 158.126,46.157 158.126,84.866C158.126,110.776 144.334,133.401 123.829,145.533" class="gauge-bar"/>
 
-        #svg #circle-bg {
-            stroke: var(--output-bg, #e1e1e1);
-        }
-
-        #svg #circle-bar {
-            stroke-dashoffset: 364px; /*364 = 0%, 0 = 100%*/
-            stroke-dasharray: 364px;
-            transition: stroke-dashoffset 1s linear;
-        }
-
-        #svg #text-value {
-            fill: var(--gauge-text-color, darkgrey);
-            text-anchor: middle;
-            font-size:28px;
-        }
-
-        .gauge-bar {
-            stroke: var(--gauge-bar-color, #1aa7c1);
-        }
-
-        .gauge-bar-limit-low-low {
-            stroke: var(--low-low-color, rgb(236, 30, 83));
-        }
-
-        .gauge-bar-limit-low {
-            stroke: var(--low-color, rgb(254, 229, 128));
-        }
-
-        .gauge-bar-limit-high {
-            stroke: var(--high-color, rgb(254, 229, 128));
-        }
-
-        .gauge-bar-limit-high-high {
-            stroke: var(--high-high-color, rgb(236, 30, 83));
-        }
-
-
-        .label-wrapper {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-top: -7px;
-            font-size: 0.6em;
-            color: var(--input-label-color, #4d4d4d);
-        }
-
-        .label-min {
-            left: -12%;
-            position: relative;
-            text-align:center;
-        }
-
-        .label-max {
-          left: 12%;
-            position: relative;
-            text-align:center;
-        }
-
-
-    </style-->
-
-    <!--svg id="svg" viewBox="0 0 180 155" version="1.1" xmlns="http://www.w3.org/2000/svg">
-        <path id="circle-bg"
-            d="M54.935,145.533C34.429,133.401 20.638,110.776 20.638,84.866C20.638,46.157 51.417,14.773 89.382,14.773C127.346,14.773 158.126,46.157 158.126,84.866C158.126,110.776 144.334,133.401 123.829,145.533"/>
-
-        <path id="circle-bar"
-            d="M54.935,145.533C34.429,133.401 20.638,110.776 20.638,84.866C20.638,46.157 51.417,14.773 89.382,14.773C127.346,14.773 158.126,46.157 158.126,84.866C158.126,110.776 144.334,133.401 123.829,145.533" class="gauge-bar"/>
-
-         <text id="text-value" x="90" y="90.5"></text>
-    </svg-->
-    <div class="gauge">
-      <svg viewBox="0 0 180 155">
-        <path class="back" d="M54.935,145.533C34.429,133.401 20.638,110.776 20.638,84.866C20.638,46.157 51.417,14.773 89.382,14.773C127.346,14.773 158.126,46.157 158.126,84.866C158.126,110.776 144.334,133.401 123.829,145.533"></path>
-        <path class="active" d="M54.935,145.533C34.429,133.401 20.638,110.776 20.638,84.866C20.638,46.157 51.417,14.773 89.382,14.773C127.346,14.773 158.126,46.157 158.126,84.866C158.126,110.776 144.334,133.401 123.829,145.533"></path>
-      </svg>
-    </div>
-    <div class="label-wrapper">
-      <span class="label label-min">{{rangeHandler.minimum}}</span>
-      <span class="label label-max">{{rangeHandler.maximum}}</span>
-    </div!>
-`;
+             <text id="text-value" x="90" y="90.5"></text>
+        </svg>
+        <div class="label-wrapper">
+          <span class="label label-min">{{rangeHandler.minimum}}</span>
+          <span class="label label-max">{{rangeHandler.maximum}}</span>
+        </div>
+      </div>
+      <!--div class="gauge">
+        <svg viewBox="0 0 180 155">
+          <path class="back" d="M54.935,145.533C34.429,133.401 20.638,110.776 20.638,84.866C20.638,46.157 51.417,14.773 89.382,14.773C127.346,14.773 158.126,46.157 158.126,84.866C158.126,110.776 144.334,133.401 123.829,145.533"></path>
+          <path class="active" d="M54.935,145.533C34.429,133.401 20.638,110.776 20.638,84.866C20.638,46.157 51.417,14.773 89.382,14.773C127.346,14.773 158.126,46.157 158.126,84.866C158.126,110.776 144.334,133.401 123.829,145.533"></path>
+        </svg>
+      </div>
+      <div class="label-wrapper">
+        <span class="label label-min">{{rangeHandler.minimum}}</span>
+        <span class="label label-max">{{rangeHandler.maximum}}</span>
+      </div-->
+    `;
   }
 
   createdCallback() {

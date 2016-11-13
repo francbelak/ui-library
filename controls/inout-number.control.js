@@ -28,7 +28,7 @@ export default class {
 
   static styleUrls() {
     return [
-      'ui-library/basic/master.css'
+      'ui-library/master.css'
     ];
   }
 
