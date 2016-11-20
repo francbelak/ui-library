@@ -57,6 +57,9 @@ export default class {
     this.setValue(this.default);
 
     this.subscribe.subscribe( (e) => {this.setValue(e.value); });
+
+    //workaround: trigger input event initially to colorize active range track
+    this.$('input').trigger('input');
   }
 
   getValue() {
