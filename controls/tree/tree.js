@@ -26,6 +26,10 @@ export default class {
         --alarm-color: #b11236;
         --tree-item-alarm-border-left-width: 5px;
         --tree-item-icon-width: 15px;
+        --tree-item-menu-background-color: rgba(38, 38, 38, 0.75);
+        --tree-item-menu-item-background-color: #303030;
+        --tree-item-menu-item-active-color: rgba(56, 177, 215, 0.84);;
+        --tree-item-menu-item-width: 55px;
       }
 
       @media screen and (min-width: 1024px) {
