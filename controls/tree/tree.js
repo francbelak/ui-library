@@ -9,6 +9,7 @@ export default class {
       }
 
       slot[name=tree-items]::slotted(*) {
+        --active-color: #38b1d7;
         --row-height: 55px;
         --text-padding-left: 10px;
         --max-width: 350px;
@@ -28,7 +29,6 @@ export default class {
         --tree-item-icon-width: 15px;
         --tree-item-menu-background-color: rgba(38, 38, 38, 0.75);
         --tree-item-menu-item-background-color: #303030;
-        --tree-item-menu-item-active-color: rgba(56, 177, 215, 0.84);;
         --tree-item-menu-item-width: 55px;
       }
 

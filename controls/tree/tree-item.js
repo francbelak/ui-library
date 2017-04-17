@@ -26,7 +26,15 @@ export default class {
           color: var(--font-color);
           display: flex;
           flex-wrap: wrap;
+          overflow: hidden;
           position: relative;
+          user-select: none;
+        }
+
+        .item-row {
+          display: flex;
+          position: relative;
+          width: 100%;
         }
 
         .tree-item.alarm .item-more + label{
@@ -204,35 +212,40 @@ export default class {
         }
 
         .tree-item-menu-item--active {
-          background-color: var(--tree-item-menu-item-active-color);
+          background-color: rgba(3, 153, 202, 0.44);
+          border-left: 1px solid var(--active-color);
+          border-right: 1px solid var(--active-color);
           height: 100%;
           position: absolute;
           right: 0;
-          width: var(--tree-item-menu-item-width);
+          transition: background-color 0.8s ease-in;
+          width: calc(var(--tree-item-menu-item-width) - 2px);
         }
       </style>
       <div class="tree-item">
-        <input type="checkbox" class="item-more" id="item-more">
-        <label for="item-more"></label>
-        <div class="item-label">{{label}}</div>
-        <div class="kpi-wrapper">
-          <div class="kpi-inner">
-            <div class="kpi-item">
-              <div class="kpi-unit">rpm</div>
-              <!-- HACK: progress bar <progress> cannot be styled as requested -->
-              <!-- TODO: check if this should be separate component -->
-              <div class="progress-bar">
-                <!-- TODO: data-width not accessible in css width attr(data-width) -->
-                <!-- see: http://stackoverflow.com/questions/18300536/get-value-of-attribute-in-css -->
-                <div class="progress-bar--active" data-width="23%"></div>
+        <div class="item-row">
+          <input type="checkbox" class="item-more" id="item-more">
+          <label for="item-more"></label>
+          <div class="item-label">{{label}}</div>
+          <div class="kpi-wrapper">
+            <div class="kpi-inner">
+              <div class="kpi-item">
+                <div class="kpi-unit">rpm</div>
+                <!-- HACK: progress bar <progress> cannot be styled as requested -->
+                <!-- TODO: check if this should be separate component -->
+                <div class="progress-bar">
+                  <!-- TODO: data-width not accessible in css width attr(data-width) -->
+                  <!-- see: http://stackoverflow.com/questions/18300536/get-value-of-attribute-in-css -->
+                  <div class="progress-bar--active" data-width="23%"></div>
+                </div>
               </div>
-            </div>
-            <div class="kpi-item">
-              <div class="kpi-unit">hp</div>
-              <!-- HACK: progress bar <progress> cannot be styled as requested -->
-              <!-- TODO: check if this should be separate component -->
-              <div class="progress-bar">
-                <div class="progress-bar--active" data-width="53"></div>
+              <div class="kpi-item">
+                <div class="kpi-unit">hp</div>
+                <!-- HACK: progress bar <progress> cannot be styled as requested -->
+                <!-- TODO: check if this should be separate component -->
+                <div class="progress-bar">
+                  <div class="progress-bar--active" data-width="53"></div>
+                </div>
               </div>
             </div>
           </div>
@@ -253,6 +266,79 @@ export default class {
       </div>
     `;
   }
+  //TODO: add css variables for values in .tree-item-menu-item--active css selector
+
+  _initMenu() {
+    //TODO: attach listeners dependent of mouse || touch support
+    this.$(this.shadowRoot.querySelectorAll('.item-row')).on('touchstart', (e) => {this._activateMenu(e);});
+    this.$(this.shadowRoot.querySelectorAll('.item-row')).on('touchmove', (e) => {this._moveMenu(e);});
+    this.$(this.shadowRoot.querySelectorAll('.item-row')).on('touchend', (e) => {this._deactivateMenu(e);});
+
+    this.menuMoved = 0; //initialize with 0 to avoid NaN in deactivateMenu
+    this.menuIsOpening = false;
+  }
+
+  _activateMenu(e) {
+    if (this.menuIsOpening)
+      this._resetMenu();
+
+    this.menuMoveStartX = e.touches[0].clientX + this.menuMoved;
+    this.menuTimeout = setTimeout(() => {
+      this.menuTimeout = null;
+      this.$(e.currentTarget).siblings('.tree-item-menu').addClass('active');
+    }, 100);
+  }
+
+  _moveMenu(e) {
+    //HACK: 0 - value to work with CSS (margin needs to be negative) - consider better CSS solution
+    this.menuMoved = 0 - (e.touches[0].clientX - this.menuMoveStartX);
+    this.$(this.shadowRoot.querySelectorAll('.tree-item-menu-item-wrapper')).css('margin-right', this.menuMoved);
+  }
+
+  _resetMenu(hard) {
+    this.$(this.shadowRoot.querySelectorAll('.tree-item-menu-item--active')).css('background-color', 'transparent');
+
+    if (!hard)
+      return;
+
+    this.menuMoved = 0;
+    this.$(this.shadowRoot.querySelectorAll('.tree-item-menu-item-wrapper')).css('margin-right', 0);
+    this.$(this.shadowRoot.querySelectorAll('.tree-item-menu')).removeClass('active');
+  }
+
+  _deactivateMenu(e) {
+    if (this.menuTimeout) {
+      clearTimeout(this.menuTimeout);
+      return this._resetMenu(true);
+    }
+
+    let menuItemWidth = this.$(this.shadowRoot.querySelectorAll('.tree-item-menu-item--active')).width();
+    let availableItems = this.$(this.shadowRoot.querySelectorAll('.tree-item-menu-item-wrapper')).width() / menuItemWidth;
+    let activeItem = Math.abs(Math.round(this.menuMoved / menuItemWidth));
+
+    if (activeItem > availableItems || activeItem < 0) {
+      this._resetMenu(true);
+      return;
+    }
+
+    this.$(this.shadowRoot.querySelectorAll('.tree-item-menu-item-wrapper')).animate({
+      marginRight: 0 - (activeItem * menuItemWidth) + 'px'
+    }, 500, () => {
+      //TODO: use control parameter for timeout
+      //TODO get color from css variable
+      //It is not able to use animate from jquery: for rgba color --> only numeric values http://stackoverflow.com/questions/22096225/jquery-animate-not-animating-backgroundcolor-rgba
+      this.$(this.shadowRoot.querySelectorAll('.tree-item-menu-item--active')).css('background-color', 'rgba(56, 177, 215, 0.79)');
+      this.menuIsOpening = true;
+
+      this.$(this.shadowRoot.querySelectorAll('.tree-item-menu-item--active')).on('transitionend', (e) => {
+        //HACK: indexOf because value is normally sthg like rgba(56, 177, 215, 0.72923)
+        //TODO: consider better solution
+        if (this.$(e.currentTarget).css('background-color').indexOf('rgba(56, 177, 215, 0.79') > -1) {
+          this._resetMenu(true);
+        }
+      });
+    });
+  }
 
   _attachAnimations() {
     if (this.initiallyExpanded)
@@ -270,6 +356,8 @@ export default class {
   }
 
   createdCallback() {
+    window.oncontextmenu = function() { return false; };
+
     if (this.animations)
       this._attachAnimations();
     else {
@@ -281,5 +369,7 @@ export default class {
 
     if (this.shadowRoot.querySelectorAll('slot')[0].assignedNodes().length === 0)
       this._removeSubBrowsing();
+
+    this._initMenu();
   }
 }
